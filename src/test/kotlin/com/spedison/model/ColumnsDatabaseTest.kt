@@ -10,7 +10,7 @@ import java.io.File
 
 internal class ColumnsDatabaseTest() {
 
-    val fileName = "/home/edisonribeiroaraujo/Documentos/codigos-ensaio/Apache-POI-Excel/conf/coluns.config.csv"
+    val fileName = "./src/test/resources/columns.config.csv"
 
     @BeforeEach
     fun setUp() {
@@ -23,8 +23,8 @@ internal class ColumnsDatabaseTest() {
     @Test
     fun readConfiguration() {
 
-        val cols : ColumnsDatabase = ColumnsDatabase()
-        cols.readConfiguration(listOf<String> ("Identificador,id,int,0,100"))
+        val cols  = ColumnsDatabase()
+        cols.readConfiguration(listOf<String> ("Identificador,id,int,100,0"))
         assertEquals(cols[0].nameExcel,"Identificador")
         assertEquals(cols[0].nameDatabase,"id")
         assertEquals(cols[0].lengthColumnDatabase,0)
@@ -36,7 +36,7 @@ internal class ColumnsDatabaseTest() {
     @Test
     fun readFileConfiguration() {
 
-        val cols : ColumnsDatabase = ColumnsDatabase()
+        val cols  = ColumnsDatabase()
         cols.readFileConfiguration(File(fileName))
         assertEquals(cols[0].nameExcel,"Identificador")
         assertEquals(cols[0].nameDatabase,"id")

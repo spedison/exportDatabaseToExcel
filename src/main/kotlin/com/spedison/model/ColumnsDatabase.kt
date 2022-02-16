@@ -6,10 +6,11 @@ import java.util.LinkedList
 
 class ColumnsDatabase : LinkedList<ColumnDatabase>() {
 
-    fun readConfiguration(lines: List<String>): Unit {
+    fun readConfiguration(lines: List<String>) {
         lines
             .filter { line -> !line.trim().startsWith("##") }
             .filter { line -> !line.trim().startsWith("--") }
+            .filter { line -> !line.trim().isEmpty() }
             .map { s -> s.split(",") }
             .map { sArray ->
                 ColumnDatabase(

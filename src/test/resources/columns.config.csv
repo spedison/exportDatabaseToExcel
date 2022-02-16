@@ -1,0 +1,9 @@
+## Field Name in Excel,
+## Field Name in database,
+## Type of field (int,float,day,hour,time,string,str),
+## Len of Excel Column
+## Len of Database Field - if type is str/string
+## Ex.:
+##ExcelField,database Field,str,2000,50
+Identificador,id,int,100,0
+Nome_Do_Campo,nomecampo,str,200,200
