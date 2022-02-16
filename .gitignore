@@ -1,0 +1,5 @@
+/.idea/
+/conf-mysql/
+/conf-postgresql/
+/target/
+consoleApp.iml

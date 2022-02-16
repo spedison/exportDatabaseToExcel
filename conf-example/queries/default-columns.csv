@@ -1,0 +1,7 @@
+## Field Name in Excel,
+## Field Name in database,
+## Type of field (int,float,day,hour,time,string,str),
+## Len of Excel Column
+## Len of Database Field - if type is str/string
+## Ex.:
+#ExcelField,database Field,str,2000,50
