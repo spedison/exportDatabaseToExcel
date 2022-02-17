@@ -9,20 +9,26 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.OutputStream
 
-class ExcelProcessor {
+class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: ColumnsDatabase, val data: DataFrame) {
 
     val wb: Workbook = XSSFWorkbook()
-    val fileNameExcelOutput: String
     val outputStremXlsx: OutputStream
-    val columnsDatabase: ColumnsDatabase
-    val data: DataFrame
     var sheetsCount: Int = 0
 
-    constructor(fileNameExcelOutput: String, columnsDatabase: ColumnsDatabase, data: DataFrame) {
-        this.fileNameExcelOutput = fileNameExcelOutput
+    val cellDayFormat : CellStyle = wb.createCellStyle()
+    val cellHourFormat : CellStyle = wb.createCellStyle()
+    val cellDateTimeFormat : CellStyle = wb.createCellStyle()
+
+    init {
         this.outputStremXlsx = FileOutputStream(this.fileNameExcelOutput)
-        this.columnsDatabase = columnsDatabase
-        this.data = data
+        ajustCellStyles()
+    }
+
+    private fun ajustCellStyles() {
+        val createHelper = wb.getCreationHelper()
+        this.cellDayFormat.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yyyy"))
+        this.cellDateTimeFormat.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yyyy h:mm:s"))
+        this.cellHourFormat.setDataFormat(createHelper.createDataFormat().getFormat("h:mm:s"))
     }
 
     fun createInstructionSheet(instructionSheet: InstructionSheet) {
@@ -46,7 +52,7 @@ class ExcelProcessor {
         cell.setCellValue(instructionSheet.text)
     }
 
-    private fun createHeaderAndWidth(page: Sheet): Unit {
+    private fun createHeaderAndWidth(page: Sheet) {
 
         val line: Row = page.createRow(0)
 
@@ -56,7 +62,7 @@ class ExcelProcessor {
         font.fontHeight = (font.fontHeight + 30).toShort()
         font.bold = true
         style.setFont(font)
-        var col: Int = 0
+        var col = 0
         for (column in columnsDatabase) {
             page.setColumnWidth(col, column.lengthExcel)
             val cell = line.createCell(col)
@@ -66,7 +72,7 @@ class ExcelProcessor {
         }
     }
 
-    fun processData(): Unit {
+    fun processData() {
 
         // Create new Page in Excel File
         val page: Sheet = wb.createSheet("Data")
@@ -78,7 +84,7 @@ class ExcelProcessor {
         // Iterate in lines of dataframe
         for (line: Int in (1..data.nrow)) {
 
-            var colNum: Int = 0
+            var colNum = 0
             val row: Row = page.createRow(line)
             // Iterate in Coluns of Dataframe
             for (col in columnsDatabase) {
@@ -91,7 +97,8 @@ class ExcelProcessor {
                     TypeColumn.DOUBLE -> CellType.NUMERIC
                     TypeColumn.FLOAT -> CellType.NUMERIC
                     TypeColumn.TIMESTAMP -> CellType.NUMERIC
-                    else -> CellType.STRING
+                    TypeColumn.DAY -> CellType.NUMERIC
+                    TypeColumn.HOUR -> CellType.NUMERIC
                 }
 
                 // Create one Cel
@@ -108,9 +115,18 @@ class ExcelProcessor {
                         TypeColumn.LONG -> cel.setCellValue(DataFrameHelper.readLong(lineData, col, data).toDouble())
                         TypeColumn.DOUBLE -> cel.setCellValue(DataFrameHelper.readDouble(lineData, col, data))
                         TypeColumn.FLOAT -> cel.setCellValue(DataFrameHelper.readFloat(lineData, col, data).toDouble())
-                        TypeColumn.TIMESTAMP -> cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
-                        TypeColumn.DAY -> cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
-                        TypeColumn.HOUR -> cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
+                        TypeColumn.TIMESTAMP -> {
+                            cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
+                            cel.cellStyle = this.cellDateTimeFormat
+                        }
+                        TypeColumn.DAY -> {
+                            cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
+                            cel.cellStyle = this.cellDayFormat
+                        }
+                        TypeColumn.HOUR -> {
+                            cel.setCellValue(DataFrameHelper.readDate(lineData, col, data))
+                            cel.cellStyle = this.cellHourFormat
+                        }
                     }
                 }
                 // Go to Next Column cel.
@@ -119,9 +135,7 @@ class ExcelProcessor {
         } // End Iterate of Dataframe
     } // End Method
 
-    fun save(): Unit {
-
-
+    fun save() {
         //TODO : Set password to Edit File.
         wb.write(outputStremXlsx)
         outputStremXlsx.close()

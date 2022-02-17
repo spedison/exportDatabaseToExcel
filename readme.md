@@ -50,13 +50,13 @@ For this, change the prefix file "default"
 
 ## Run parameter and examples. 
 
-java -jar ExtractDataToExcel.jar --configdir ~/config-mysql --xlsfile ./out.xlsx
+java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --configdir ~/config-mysql --xlsfile ./out.xlsx
 
-  - sqlfile when is not present, the value is "default" 
+   - sqlfile when is not present, the value is "default" 
 
-java -jar ExtractDataToExcel.jar --sqlfile info --configdir ~/config-mysql --xlsfile ./out.xlsx
+java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile info --configdir ~/config-mysql --xlsfile ./out.xlsx
 
-    - sqlfile is "info" so it find files "info.sql", "info-columns.csv", "info-instructions.properties"
+   - When sqlfile is "info" it will use files : "info.sql", "info-columns.csv", "info-instructions.properties"
 
 ### It's help !
 
@@ -86,3 +86,5 @@ usage:
 
 ### 3) Database suport 
     Others databases are supported, but add jdbc file in project (pom.xml)
+
+### 4) If you don't want register user and password of database in conection file, put "***" then it is requered in prompt.

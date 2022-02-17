@@ -23,10 +23,12 @@ sealed class TypeColumn {
                 "float" -> FLOAT
                 "double" -> DOUBLE
                 "day" -> DAY
+                "date" -> DAY
                 "hour" -> HOUR
-                "time" -> TIMESTAMP
+                "time" -> HOUR
                 "timestamp" -> TIMESTAMP
-                else -> STRING
+                "datetime" -> TIMESTAMP
+                else -> throw Exception("Problems while capture type in coluns configuration file. Please,Check type : ${str}")
             }
     }
 }
