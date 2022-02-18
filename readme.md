@@ -1,4 +1,4 @@
-# What is Project ?
+# What is this Project ?
 
 This application is created for extrat data from any jdbc database to Excel file with formated values.
 
