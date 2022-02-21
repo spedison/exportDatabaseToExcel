@@ -8,16 +8,17 @@ import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.OutputStream
+import kotlin.math.min
 
-class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: ColumnsDatabase, val data: DataFrame) {
+class ExcelProcessor(private val fileNameExcelOutput: String, private val columnsDatabase: ColumnsDatabase, private val data: DataFrame, private val verbose: Boolean = false) {
 
-    val wb: Workbook = XSSFWorkbook()
-    val outputStremXlsx: OutputStream
-    var sheetsCount: Int = 0
+    private val wb: Workbook = XSSFWorkbook()
+    private val outputStremXlsx: OutputStream
+    private var sheetsCount: Int = 0
 
-    val cellDayFormat : CellStyle = wb.createCellStyle()
-    val cellHourFormat : CellStyle = wb.createCellStyle()
-    val cellDateTimeFormat : CellStyle = wb.createCellStyle()
+    private val cellDayFormat : CellStyle = wb.createCellStyle()
+    private val cellHourFormat : CellStyle = wb.createCellStyle()
+    private val cellDateTimeFormat : CellStyle = wb.createCellStyle()
 
     init {
         this.outputStremXlsx = FileOutputStream(this.fileNameExcelOutput)
@@ -25,10 +26,13 @@ class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: Colum
     }
 
     private fun ajustCellStyles() {
-        val createHelper = wb.getCreationHelper()
-        this.cellDayFormat.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yyyy"))
-        this.cellDateTimeFormat.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yyyy h:mm:s"))
-        this.cellHourFormat.setDataFormat(createHelper.createDataFormat().getFormat("h:mm:s"))
+        val createHelper = wb.creationHelper
+        this.cellDayFormat.dataFormat = createHelper.createDataFormat().getFormat("d/m/yyyy")
+        this.cellDateTimeFormat.dataFormat = createHelper.createDataFormat().getFormat("d/m/yyyy h:mm:s")
+        this.cellHourFormat.dataFormat = createHelper.createDataFormat().getFormat("h:mm:s")
+
+        if (verbose)
+            println("Style is created.")
     }
 
     fun createInstructionSheet(instructionSheet: InstructionSheet) {
@@ -63,8 +67,9 @@ class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: Colum
         font.bold = true
         style.setFont(font)
         var col = 0
+
         for (column in columnsDatabase) {
-            page.setColumnWidth(col, column.lengthExcel)
+            page.setColumnWidth(col,  min( column.lengthExcel, 250*250) )
             val cell = line.createCell(col)
             cell.setCellValue(column.nameExcel)
             cell.cellStyle = style
@@ -84,12 +89,22 @@ class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: Colum
         // Iterate in lines of dataframe
         for (line: Int in (1..data.nrow)) {
 
+            // Row num to process.
             var colNum = 0
+
+            // Create Excel Row.
             val row: Row = page.createRow(line)
+
+            // Set Value of Cell
+            val lineData = line - 1
+
+            if (verbose)
+                println("Line Dataframe ${line} = " + data.row(lineData))
+
             // Iterate in Coluns of Dataframe
             for (col in columnsDatabase) {
 
-                // Define CellType
+                // Define Excel CellType
                 val cellType: CellType = when (col.type) {
                     TypeColumn.STRING -> CellType.STRING
                     TypeColumn.INT -> CellType.NUMERIC
@@ -104,8 +119,7 @@ class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: Colum
                 // Create one Cel
                 val cel = row.createCell(colNum, cellType)
 
-                // Set Value of Cell
-                val lineData = line - 1
+
                 if (DataFrameHelper.isNull(lineData, col, data)) {
                     cel.setBlank()
                 } else {
@@ -139,6 +153,8 @@ class ExcelProcessor(val fileNameExcelOutput: String, val columnsDatabase: Colum
         //TODO : Set password to Edit File.
         wb.write(outputStremXlsx)
         outputStremXlsx.close()
+        if (verbose)
+            println("Excel File  ${fileNameExcelOutput} was writed.")
     }
 
 }

@@ -4,7 +4,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
-class InstructionSheet() {
+class InstructionSheet(private val verbose : Boolean = false ) {
 
     var text: String = ""
         private set
@@ -28,9 +28,13 @@ class InstructionSheet() {
     fun loadFromFile(fileName: String): Boolean {
 
         val prop = Properties()
-        val f: File = File(fileName)
-        if (!f.exists())
+        val f = File(fileName)
+        if (!f.exists()) {
+            if (verbose) {
+                println("${fileName} is not exists. Do not load.")
+            }
             return false
+        }
 
         FileInputStream(f).use {
             prop.load(it)
@@ -40,10 +44,12 @@ class InstructionSheet() {
             this.col = prop.getProperty("Col", "0").toInt()
             this.width = prop.getProperty("Width", "1000").toInt()
             this.height = prop.getProperty("Height", "1000").toInt()
+
+            if (verbose)
+                println("Instruction Sheet data was loaded.")
         }
 
         return true
     }
-
 
 }

@@ -23,9 +23,17 @@ object ArgParse {
         options
             .addOption("stz", "showtimezone",false,"List all avaliable timezone in enviroment")
 
+        options
+            .addOption("sc", "showcols",false,"List Columns of SQL File")
+
+        options
+            .addOption("ccf", "createcolsfile",false,"Suggest a configuration column file")
 
         options
             .addOption("help",false,"Show help")
+
+        options
+            .addOption("v", "verbose",false,"Show Details Processing")
 
         return options
     }

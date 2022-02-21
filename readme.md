@@ -50,7 +50,7 @@ For this, change the prefix file "default"
 
 ## Run parameter and examples. 
 
-java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --configdir ~/config-mysql --xlsfile ./out.xlsx
+java  -jar ExtractDataToExcel.jar --configdir ~/config-mysql --xlsfile ./out.xlsx
 
    - sqlfile when is not present, the value is "default" 
 
@@ -58,26 +58,51 @@ java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile inf
 
    - When sqlfile is "info" it will use files : "info.sql", "info-columns.csv", "info-instructions.properties"
 
-### It's help !
+## Defalts
+
+| Variable      | Value             | Details                                                                                   | 
+|---------------|-------------------|-------------------------------------------------------------------------------------------|
+| user.timezone | America/Sao_Paulo | Time Zone Used        (example -Duser.timezone\="America/Sao_Paulo")                      |
+| sql           | default           | \<sql value\>.sql, \<sql value\>-columns.csv, \<sql value\>-instructions.properties files |
+| xls           | output.xlsx       | Excel Output file created                                                                 |                                                               
+| configdir     | Current Dir       | Dir of configuration files (connection and queries )                                      |
+
+## Others Functions
+
+### Show Coluns info
+
+    java -jar ExtractDataToExcel.jar --createcolsfile --sqlfile info --configdir ~/config-mysql
+
+### Create Columns file, using SQL file
+
+    java -jar ExtractDataToExcel.jar --createcolsfile --sqlfile info --configdir ~/config-mysql
+
+### Show TimeZone Supported
+
+    java -jar ExtractDataToExcel.jar --showtimezone
+
+### Show Help
 
 ```
 java -jar ExtractDataToExcel.jar -help
 
 usage:
- -cd,--configdir <arg>     Directory with condif files.
- -create,--xlsfile <arg>   Output file excel format. Example --xlsfile
-                           output.xlsx
- -help                     Show help
- -sql,--sqlfile <arg>      File with Sql File query. Do not use extension
-                           ".sql". Example --sqlfile report1
- -xls,--xlsfile <arg>      Output file excel format. Example --xlsfile
-                           output.xlsx
+ -ccf,--createcolsfile   Suggest a configuration column file
+ -cd,--configdir <arg>   Directory with condif files.
+ -help                   Show help
+ -sc,--showcols          List Columns of SQL File
+ -sql,--sqlfile <arg>    File with Sql File query. Do not use extension
+                         ".sql". Example --sqlfile report1
+ -stz,--showtimezone     List all avaliable timezone in enviroment
+ -v,--verbose            Show Details Processing
+ -xls,--xlsfile <arg>    Output file excel format. Example --xlsfile
+                         output.xlsx
 ```                           
 
 ### Others Details
 
 ### 1) I don't need Sheet instructions
-   When *-instructions.properties file is ausent, the sheet instruction will be not created.
+   When < sql >-instructions.properties file is ausent, the sheet instruction will be not created.
 
 ### 2) Databases supported are:
     - Oracle

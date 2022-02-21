@@ -9,16 +9,25 @@ import java.sql.Date
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoField
 
 
 object DataFrameHelper {
 
     val timeZoneConfig = ListTimeZone.getTimeZoneId()
 
-    fun createDataFrameFromQuery(conn: Connection, sql: String): DataFrame {
+    fun createDataFrameFromQuery(conn: Connection, sql: String, verbose: Boolean = false): DataFrame {
         val stmt = conn.createStatement()
         val rs = stmt.executeQuery(sql)
+
+        if (verbose)
+            println("Query executed")
+
         val ret = DataFrame.fromResultSet(rs)
+
+        if (verbose)
+            println("Data is load to Dataframe")
+
         return ret
     }
 
@@ -84,7 +93,7 @@ object DataFrameHelper {
         return (row.get(columName) == null)
     }
 
-
+    @SuppressWarnings
     fun readDate(line: Int, columnsDatabase: ColumnDatabase, data: DataFrame): java.util.Date {
         val columName: String = columnsDatabase.nameDatabase
         val row: DataFrameRow = data.row(line)
@@ -98,8 +107,11 @@ object DataFrameHelper {
 
         if (value is LocalDate)
             return Date(
-                value.atStartOfDay().atZone(this.timeZoneConfig.toZoneId()).toEpochSecond() * 1000L
-            )
+                value.get(ChronoField.YEAR)-1900,
+                value.get(ChronoField.MONTH_OF_YEAR)-1,
+                value.get(ChronoField.DAY_OF_MONTH))
+                //value.atStartOfDay().atZone(this.timeZoneConfig.toZoneId()).toEpochSecond() * 1000L
+            //)
 
         if (value is LocalTime) {
             val ret = LocalDateTime.of(LocalDate.now(), value)

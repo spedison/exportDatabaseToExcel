@@ -1,15 +1,20 @@
 package com.spedison.model.enuns
 
-sealed class TypeColumn {
+sealed class TypeColumn (val typeString: String) {
 
-    object STRING : TypeColumn()
-    object INT : TypeColumn()
-    object LONG : TypeColumn()
-    object FLOAT : TypeColumn()
-    object DOUBLE : TypeColumn()
-    object DAY : TypeColumn()
-    object HOUR : TypeColumn()
-    object TIMESTAMP: TypeColumn()
+    object STRING : TypeColumn("str")
+    object INT : TypeColumn("int")
+    object LONG : TypeColumn("long")
+    object FLOAT : TypeColumn("float")
+    object DOUBLE : TypeColumn("double")
+    object DAY : TypeColumn("day")
+    object HOUR : TypeColumn("time")
+    object TIMESTAMP: TypeColumn("datetime")
+
+
+    override fun toString(): String {
+        return this.typeString
+    }
 
     companion object {
         fun convertFromString(str: String): TypeColumn =

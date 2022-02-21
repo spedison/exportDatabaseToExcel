@@ -7,19 +7,34 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
 
-class ConectionDatabase(private val fileConetion: String) {
+class ConectionDatabase {
 
-    private var file: File
+    private var file: File = File("")
     private val prop = Properties()
+    private var fileConetion: String = ""
+    private var verbose: Boolean = false
 
-    init {
-        file = File(fileConetion)
+    fun setVerbose(verbose: Boolean) {
+        this.verbose = verbose
     }
 
-    fun load() {
+    fun load(fileConetion: String) {
+        this.fileConetion = fileConetion
+        this.file = File(fileConetion)
+
+        if (!file.exists()) {
+            if (verbose){
+                println("File ${fileConetion} is not exists")
+            }
+            return
+        }
+
         FileInputStream(file).use {
             prop.load(it)
             it.close()
+            if (verbose){
+                println("File ${fileConetion} was loaded")
+            }
         }
 
         if (prop.getProperty("user").trim().startsWith("***")) {
@@ -54,10 +69,16 @@ class ConectionDatabase(private val fileConetion: String) {
         val driver = prop.getProperty("driver").trim()
         Class.forName(driver)
 
+        if (verbose)
+            println("The class ${driver} was loaded.")
+
         val connection = DriverManager.getConnection(
             prop.getProperty("url"),
             prop.getProperty("user"),
             prop.getProperty("pass"))
+
+        if (verbose)
+            println("The connection was created.")
 
         return connection
     }
