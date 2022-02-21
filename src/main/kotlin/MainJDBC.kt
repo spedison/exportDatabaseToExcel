@@ -91,7 +91,7 @@ class MainJDBC {
         xlsFile = argsParsed.getOptionValue("xlsfile") ?: "output.xlsx"
 
         // Load SQL Query
-        query = SqlLoadHelper.loadSqlFromFile("${sqlFile}.sql")
+        query = SqlLoadHelper.loadSqlFromFile("${sqlFile}.sql", verbose)
     }
 
     private fun createExcelFile(

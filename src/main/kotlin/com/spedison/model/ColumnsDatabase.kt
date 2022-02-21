@@ -33,9 +33,9 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
 
     fun writeConfiguration(file: File) {
         val out: OutputStream = FileOutputStream(file)
-        out.write("##ExcelName,DBName,Type,LengthExcel,LengthDB\n".toByteArray(Charset.forName("UTF-8")))
+        out.write("##ExcelName,DBName,Type,LengthExcel,LengthDB\n".toByteArray(Charset.defaultCharset()))
         this.stream().map(ColumnDatabase::toString).map { it -> it + "\n" }
-            .forEach { it -> out.write(it.toByteArray(Charset.forName("UTF-8"))) }
+            .forEach { it -> out.write(it.toByteArray(Charset.defaultCharset())) }
         out.close()
     }
 

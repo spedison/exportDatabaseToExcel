@@ -1,10 +1,14 @@
 package com.spedison.model
 
+import java.io.BufferedReader
 import java.io.File
-import java.io.FileInputStream
+import java.nio.charset.Charset
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
-class InstructionSheet(private val verbose : Boolean = false ) {
+
+class InstructionSheet(private val verbose: Boolean = false) {
 
     var text: String = ""
         private set
@@ -35,19 +39,22 @@ class InstructionSheet(private val verbose : Boolean = false ) {
             }
             return false
         }
+        val buffReader: BufferedReader = Files.newBufferedReader(Paths.get(fileName), Charset.defaultCharset())
 
-        FileInputStream(f).use {
-            prop.load(it)
-            this.text = prop.getProperty("Text", "Without text")
-            this.sheetName = prop.getProperty("SheetName", "SheetName withou name")
-            this.row = prop.getProperty("Row", "0").toInt()
-            this.col = prop.getProperty("Col", "0").toInt()
-            this.width = prop.getProperty("Width", "1000").toInt()
-            this.height = prop.getProperty("Height", "1000").toInt()
+        //FileInputStream(f).use {
+        prop.load(buffReader)
+        this.text = prop.getProperty("Text", "Without text")
+        this.sheetName = prop.getProperty("SheetName", "SheetName withou name")
+        this.row = prop.getProperty("Row", "0").toInt()
+        this.col = prop.getProperty("Col", "0").toInt()
+        this.width = prop.getProperty("Width", "1000").toInt()
+        this.height = prop.getProperty("Height", "1000").toInt()
 
-            if (verbose)
-                println("Instruction Sheet data was loaded.")
-        }
+        if (verbose)
+            println("Instruction Sheet data was loaded.")
+
+        buffReader.close()
+        //}
 
         return true
     }
