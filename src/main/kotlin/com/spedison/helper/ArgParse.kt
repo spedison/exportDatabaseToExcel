@@ -12,7 +12,7 @@ object ArgParse {
         val options = Options()
 
         options
-            .addOption("cd", "configdir", true,"Directory with condif files.")
+            .addOption("cd", "configdir", true,"Directory with config files.")
 
         options
             .addOption("sql", "sqlfile", true, "File with Sql File query. Do not use extension \".sql\". Example --sqlfile report1")
@@ -21,19 +21,19 @@ object ArgParse {
             .addOption("xls", "xlsfile",true,"Output file excel format. Example --xlsfile output.xlsx")
 
         options
-            .addOption("stz", "showtimezone",false,"List all avaliable timezone in enviroment")
+            .addOption("stz", "showtimezone",false,"Show all avaliable timezone in enviroment")
 
         options
-            .addOption("sc", "showcols",false,"List Columns of SQL File")
+            .addOption("sc", "showcols",false,"Show Columns of SQL File")
 
         options
-            .addOption("ccf", "createcolsfile",false,"Suggest a configuration column file")
+            .addOption("ccf", "createcolsfile",false,"Create a configuration column file")
 
         options
             .addOption("help",false,"Show help")
 
         options
-            .addOption("v", "verbose",false,"Show Details Processing")
+            .addOption("v", "verbose",false,"Turn verbose mode on. Show details while processing")
 
         return options
     }
