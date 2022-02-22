@@ -117,3 +117,6 @@ usage:
     Example :
         * user=***Use Keyboard***
         * pass=***Use Keyboard***
+        
+### 5) Download bin files:
+    https://1drv.ms/u/s!Asl9Qoe_F0_Vp6sfLWZ5watAr1Zo7Q
