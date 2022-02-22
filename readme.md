@@ -87,14 +87,15 @@ java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile inf
 java -jar ExtractDataToExcel.jar -help
 
 usage:
- -ccf,--createcolsfile   Suggest a configuration column file
- -cd,--configdir <arg>   Directory with condif files.
+ -ccf,--createcolsfile   Create a configuration column file
+ -cd,--configdir <arg>   Directory with config files.
  -help                   Show help
- -sc,--showcols          List Columns of SQL File
+ -sc,--showcols          Show Columns of SQL File
  -sql,--sqlfile <arg>    File with Sql File query. Do not use extension
                          ".sql". Example --sqlfile report1
- -stz,--showtimezone     List all avaliable timezone in enviroment
- -v,--verbose            Show Details Processing
+ -stz,--showtimezone     Show all avaliable timezone in enviroment
+ -v,--verbose            Turn verbose mode on. Show details while
+                         processing
  -xls,--xlsfile <arg>    Output file excel format. Example --xlsfile
                          output.xlsx
 ```                           
