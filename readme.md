@@ -73,7 +73,7 @@ java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile inf
 
     java -jar ExtractDataToExcel.jar --createcolsfile --sqlfile info --configdir ~/config-mysql
 
-### Create Columns file, using SQL file
+### Create Columns file (./config/queries/*-columns.csv) from SQL file
 
     java -jar ExtractDataToExcel.jar --createcolsfile --sqlfile info --configdir ~/config-mysql
 
