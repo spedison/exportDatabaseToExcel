@@ -6,7 +6,7 @@ Use query in connection JDBC data and extract data with Excel file using POI.
 
 This Excel file have Collumn site ajusted and Header with Bold font.
 
-Por Sheet information, user *-instructions.properties file and create with custon text.  
+There are sheet information, for this use < sql >-instructions.properties file and create with custon text.  
 
     Input :  
         * Query
@@ -113,3 +113,6 @@ usage:
     Others databases are supported, but add jdbc file in project (pom.xml)
 
 ### 4) If you don't want register user and password of database in conection file, put "***" then it is requered in prompt.
+    Example :
+        * user=***Use Keyboard***
+        * pass=***Use Keyboard***
