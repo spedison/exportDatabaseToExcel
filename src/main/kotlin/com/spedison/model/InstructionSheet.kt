@@ -4,7 +4,9 @@ import java.io.BufferedReader
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Files
+import java.nio.file.Files.*
 import java.nio.file.Paths
+import java.nio.file.Paths.*
 import java.util.*
 
 
@@ -39,7 +41,7 @@ class InstructionSheet(private val verbose: Boolean = false) {
             }
             return false
         }
-        val buffReader: BufferedReader = Files.newBufferedReader(Paths.get(fileName), Charset.defaultCharset())
+        val buffReader: BufferedReader = newBufferedReader(get(fileName), Charset.defaultCharset())
 
         //FileInputStream(f).use {
         prop.load(buffReader)

@@ -6,7 +6,6 @@ import org.apache.commons.cli.*
 object ArgParse {
 
 
-
     private fun makeOptions(): Options {
 
         val options = Options()
@@ -15,10 +14,10 @@ object ArgParse {
             .addOption("cd", "configdir", true,"Directory with config files.")
 
         options
-            .addOption("sql", "sqlfile", true, "File with Sql File query. Do not use extension \".sql\". Example --sqlfile report1")
+            .addOption("sql", "sqlfile", true, "File with Sql File query. Do not use extension \".sql\". Example --sqlfile report1,report2,report3")
 
         options
-            .addOption("xls", "xlsfile",true,"Output file excel format. Example --xlsfile output.xlsx")
+            .addOption("xls", "xlsfile",true,"Output file excel format. Example --xlsfile output1.xlsx,output2.xlsx,output3.xlsx")
 
         options
             .addOption("stz", "showtimezone",false,"Show all avaliable timezone in enviroment")

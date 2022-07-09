@@ -4,18 +4,21 @@ import com.spedison.model.ColumnsDatabase
 import com.spedison.model.InstructionSheet
 import org.apache.commons.cli.CommandLine
 import java.io.File
+import java.nio.file.Paths.*
 import java.sql.Connection
+import java.util.LinkedList
 
 class MainJDBC {
 
     private var showColsInfo: Boolean = false
     private var baseConfigDir: String = ""
     private var conectionDatabase: ConectionDatabase = ConectionDatabase()
-    private val colunms = ColumnsDatabase()
-    private var sqlFile: String = ""
-    private var xlsFile: String = ""
-    private var query : String = ""
-    private var verbose : Boolean = false
+    private val columns: LinkedList<ColumnsDatabase> = LinkedList<ColumnsDatabase>()
+    private var sqlFile: LinkedList<String> = LinkedList<String>()
+    private var xlsFile: LinkedList<String> = LinkedList<String>()
+    private var query: LinkedList<String> = LinkedList<String>()
+    private var verbose: Boolean = false
+
 
     fun main(args: Array<String>) {
 
@@ -38,9 +41,11 @@ class MainJDBC {
         // Load arguments and defauls for processing.
         loadAllParameters(argsParsed)
 
-        // Load coluns configurations, if will not be show fields data
-        if (showColsInfo == false)
-            colunms.readFileConfiguration(File("${sqlFile}-columns.csv"))
+        if (xlsFile.size != query.size) {
+            println("List of Queries and list of files must be same size.")
+            ArgParse.printHelp()
+        }
+
 
         // Set On/Off verbose
         conectionDatabase.setVerbose(verbose)
@@ -53,18 +58,20 @@ class MainJDBC {
 
         // Show Columns or create configuration File.
         if (showColsInfo) {
-
-            if (argsParsed.hasOption("createcolsfile")) {
-                colunms.getColumns(query, conn)
-                colunms.writeConfiguration(File("${sqlFile}-columns.csv"))
-                println("Configuartion file \"${sqlFile}-columns.csv\" has created.")
-            } else {
-                // Show Columns of query
-                ShowCols.print(query, conn, false)
+            for (i in 0..sqlFile.size - 1) {
+                if (argsParsed.hasOption("createcolsfile")) {
+                    columns.get(i).getColumns(query.get(i), conn)
+                    columns.get(i).writeConfiguration(File("${sqlFile.get(i)}-columns.csv"))
+                    println("Configuartion file \"${sqlFile.get(i)}-columns.csv\" has created.")
+                } else {
+                    // Show Columns of query
+                    ShowCols.print(query.get(i), conn, false)
+                }
             }
         } else {
-
-            createExcelFile(conn, query, xlsFile, sqlFile)
+            for (i in 0..sqlFile.size - 1) {
+                createExcelFile(conn, query.get(i), xlsFile.get(i), sqlFile.get(i), columns.get(i))
+            }
         }
 
         // close database
@@ -85,13 +92,24 @@ class MainJDBC {
         }
 
         // Make Sql Base file locacation: <sqlname>, <sqlname>.sql, <sqlname>-columns.csv, <sqlname>-instructions.properties
-        sqlFile = (baseConfigDir + "queries" + File.separator +
-                ((argsParsed.getOptionValue("sqlfile") ?: "default").lowercase()).removeSuffix(".sql"))
+        val localListSqlFile = argsParsed.getOptionValue("sqlfile", "default").split("[,]")
+        localListSqlFile.forEach {
+            val localFile = get(baseConfigDir, "queries", "${it}.sql").toString()
+            sqlFile.add(localFile)
+            query.add(SqlLoadHelper.loadSqlFromFile(localFile, verbose))
 
-        xlsFile = argsParsed.getOptionValue("xlsfile") ?: "output.xlsx"
+            // Load coluns configurations, if will not be show fields data
+            if (showColsInfo == false) {
+                val columnsToadd = ColumnsDatabase()
+                columnsToadd.readFileConfiguration(File(localFile.replace(".sql", "-columns.csv")))
+                columns.add(columnsToadd)
+            }
+        }
 
-        // Load SQL Query
-        query = SqlLoadHelper.loadSqlFromFile("${sqlFile}.sql", verbose)
+        val listListXlsFile = (argsParsed.getOptionValue("xlsfile") ?: "output.xlsx").split("[,]")
+        listListXlsFile.forEach {
+            xlsFile.add(it)
+        }
     }
 
     private fun createExcelFile(
@@ -99,16 +117,17 @@ class MainJDBC {
         query: String,
         xlsFile: String,
         sqlFile: String,
+        columns: ColumnsDatabase,
     ) {
         // Dataframe to Work :-)
         val data = DataFrameHelper.createDataFrameFromQuery(conn, query, verbose)
 
         // Create Excel Processor
-        val excelProcessor = ExcelProcessor(xlsFile, colunms, data, verbose)
+        val excelProcessor = ExcelProcessor(xlsFile, columns, data, verbose)
 
         // If filename instructions exists then create Instructions Sheet in Excel file.
         val instructions = InstructionSheet(verbose)
-        val filenameInstructions = "${sqlFile}-instructions.properties"
+        val filenameInstructions = sqlFile.replace(".sql","-instructions.properties")
         if (instructions.loadFromFile(filenameInstructions)) {
             excelProcessor.createInstructionSheet(instructions)
         }

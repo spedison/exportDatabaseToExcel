@@ -92,7 +92,7 @@ usage:
  -help                   Show help
  -sc,--showcols          Show Columns of SQL File
  -sql,--sqlfile <arg>    File with Sql File query. Do not use extension
-                         ".sql". Example --sqlfile report1
+                         ".sql". Example --sqlfile report1,report2...
  -stz,--showtimezone     Show all avaliable timezone in enviroment
  -v,--verbose            Turn verbose mode on. Show details while
                          processing
@@ -117,3 +117,10 @@ usage:
     Example :
         * user=***Use Keyboard***
         * pass=***Use Keyboard***
+
+### 5) Last changes
+    09/06/2022 
+      * Accept list of executation with files and queries (using same connection)
+      * Compile for using java 18 jre.
+      * 
+
