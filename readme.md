@@ -2,11 +2,11 @@
 
 This application is created for extrat data from any jdbc database to Excel file with formated values.
 
-Use query in connection JDBC data and extract data with Excel file using POI. 
+Use query in connection JDBC data and extract data with Excel file using POI.
 
 This Excel file have Collumn site ajusted and Header with Bold font.
 
-There are sheet information, for this use < sql >-instructions.properties file and create with custon text.  
+There are sheet information, for this use < sql >-instructions.properties file and create with custon text.
 
     Input :  
         * Query
@@ -20,13 +20,13 @@ There are sheet information, for this use < sql >-instructions.properties file a
 
 ## Dependencies for build project
 
-  * Kotlin - Version 1.6
-  * Java   - Version 11
-  * Maven  - Version 3.8.1
+* Kotlin - Version 1.6
+* Java   - Version 11
+* Maven  - Version 3.8.1
 
 ## Dependency for run project
 
-  * Java   - Version 11
+* Java   - Version 11
 
 ## Process Build
 
@@ -40,23 +40,23 @@ copy conf-example to contigure query and connection
 
 ### Whats is ./conf/* files ?
 
-   + ./conf/connection.properties -> Conection database details
-   + ./conf/queries/defaul.sql    -> Query
-   + ./conf/queries/defaul-columns.csv    -> CSV to configure fields in Excel.
-   + ./conf/queries/defaul-instructions.properties    -> Create Sheet with instructions
++ ./conf/connection.properties -> Conection database details
++ ./conf/queries/defaul.sql    -> Query
++ ./conf/queries/defaul-columns.csv    -> CSV to configure fields in Excel.
++ ./conf/queries/defaul-instructions.properties    -> Create Sheet with instructions
 
-You can use many queries in the same configuration. 
+You can use many queries in the same configuration.
 For this, change the prefix file "default"
 
-## Run parameter and examples. 
+## Run parameter and examples.
 
 java  -jar ExtractDataToExcel.jar --configdir ~/config-mysql --xlsfile ./out.xlsx
 
-   - sqlfile when is not present, the value is "default" 
+- sqlfile when is not present, the value is "default"
 
 java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile info --configdir ~/config-mysql --xlsfile ./out.xlsx
 
-   - When sqlfile is "info" it will use files : "info.sql", "info-columns.csv", "info-instructions.properties"
+- When sqlfile is "info" it will use files : "info.sql", "info-columns.csv", "info-instructions.properties"
 
 ## Defalts
 
@@ -92,7 +92,7 @@ usage:
  -help                   Show help
  -sc,--showcols          Show Columns of SQL File
  -sql,--sqlfile <arg>    File with Sql File query. Do not use extension
-                         ".sql". Example --sqlfile report1,report2...
+                         ".sql". Example --sqlfile report1
  -stz,--showtimezone     Show all avaliable timezone in enviroment
  -v,--verbose            Turn verbose mode on. Show details while
                          processing
@@ -103,14 +103,14 @@ usage:
 ### Others Details
 
 ### 1) I don't need Sheet instructions
-   When < sql >-instructions.properties file is ausent, the sheet instruction will be not created.
+When < sql >-instructions.properties file is ausent, the sheet instruction will be not created.
 
 ### 2) Databases supported are:
     - Oracle
     - MySQl
     - PostgreSQL
 
-### 3) Database suport 
+### 3) Database suport
     Others databases are supported, but add jdbc file in project (pom.xml)
 
 ### 4) If you don't want register user and password of database in conection file, put "***" then it is requered in prompt.
@@ -118,9 +118,7 @@ usage:
         * user=***Use Keyboard***
         * pass=***Use Keyboard***
 
-### 5) Last changes
-    09/06/2022 
-      * Accept list of executation with files and queries (using same connection)
-      * Compile for using java 18 jre.
-      * 
+### 5) Download bin files:
+    https://1drv.ms/u/s!Asl9Qoe_F0_Vp6sfLWZ5watAr1Zo7Q
 
+### 6) Last changes
