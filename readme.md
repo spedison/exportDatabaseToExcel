@@ -144,7 +144,7 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * user=***Use Keyboard***
         * pass=***Use Keyboard***
 
-### 5) Download bin files:
+### 5) Download packages ready to use:
     https://1drv.ms/u/s!Asl9Qoe_F0_Vp6sfLWZ5watAr1Zo7Q
 
 ### 6) Last changes
@@ -157,3 +157,4 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
 
 ### 7) TODO List
    * Parameter file Multiline.
+   * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
