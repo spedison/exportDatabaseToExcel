@@ -12,19 +12,42 @@ import java.util.LinkedList
 import kotlin.math.min
 
 class ColumnsDatabase : LinkedList<ColumnDatabase>() {
-
+    var fieldsSortedAsc: String = ""
+    var fieldsSortedDesc: String = ""
     fun readConfiguration(lines: List<String>) {
         lines
             .filter { line -> !line.trim().startsWith("##") }
             .filter { line -> !line.trim().startsWith("--") }
             .filter { line -> !line.trim().isEmpty() }
             .map { s -> s.split(",") }.map { sArray ->
-                ColumnDatabase(sArray[0],
+                ColumnDatabase(
+                    sArray[0],
                     sArray[1],
                     TypeColumn.convertFromString(sArray[2]),
                     sArray[4].toInt(),
-                    sArray[3].toInt())
+                    sArray[3].toInt()
+                )
             }.forEach(this::add)
+
+        lines
+            .filter { it.trim().startsWith("--SORTED+:") or  it.trim().startsWith("--SORTED:")}
+            .map { it.replace("--SORTED+:", "") }
+            .map { it.replace("--SORTED:", "") }
+            .map(String::trim)
+            .forEach { fieldsSortedAsc += "${it}," }
+
+        if (fieldsSortedAsc.endsWith(","))
+            fieldsSortedAsc = fieldsSortedAsc.subSequence(0, fieldsSortedAsc.length - 1).toString()
+
+        lines
+            .filter { it.trim().startsWith("--SORTED-:") }
+            .map { it.replace("--SORTED-:", "") }
+            .map(String::trim)
+            .forEach { fieldsSortedDesc += "${it}," }
+
+        if (fieldsSortedDesc.endsWith(","))
+            fieldsSortedDesc = fieldsSortedDesc.subSequence(0, fieldsSortedDesc.length - 1).toString()
+
     }
 
     fun readFileConfiguration(file: File) {
@@ -34,7 +57,7 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
     fun writeConfiguration(file: File) {
         val out: OutputStream = FileOutputStream(file)
         out.write("##ExcelName,DBName,Type,LengthExcel,LengthDB\n".toByteArray(Charset.defaultCharset()))
-        this.stream().map(ColumnDatabase::toString).map { it -> it + "\n" }
+        this.map(ColumnDatabase::toString).map { it -> it + "\n" }
             .forEach { it -> out.write(it.toByteArray(Charset.defaultCharset())) }
         out.close()
     }
@@ -74,11 +97,15 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
             }
 
             val typeColumn: TypeColumn = TypeColumn.convertFromString(nameOfType)
-            this.add(ColumnDatabase(labelName,
-                name,
-                typeColumn,
-                rsmd.getColumnDisplaySize(i),
-                min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250)))
+            this.add(
+                ColumnDatabase(
+                    labelName,
+                    name,
+                    typeColumn,
+                    rsmd.getColumnDisplaySize(i),
+                    min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250)
+                )
+            )
         }
 
         rs.close()

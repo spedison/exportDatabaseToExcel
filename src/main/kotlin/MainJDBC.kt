@@ -1,4 +1,5 @@
 import com.spedison.database.ConectionDatabase
+import com.spedison.database.VariableSQL
 import com.spedison.helper.*
 import com.spedison.model.ColumnsDatabase
 import com.spedison.model.InstructionSheet
@@ -17,6 +18,7 @@ class MainJDBC {
     private var sqlFile: LinkedList<String> = LinkedList<String>()
     private var xlsFile: LinkedList<String> = LinkedList<String>()
     private var query: LinkedList<String> = LinkedList<String>()
+    private var variablesSQL: LinkedList<VariableSQL> = LinkedList<VariableSQL>()
     private var verbose: Boolean = false
 
 
@@ -91,8 +93,12 @@ class MainJDBC {
             baseConfigDir += File.separatorChar
         }
 
+        argsParsed.options.filter { it.longOpt.equals("sqlparam") }
+            .map { VariableSQL.fromString(it.value) }
+            .forEach(variablesSQL::add)
+
         // Make Sql Base file locacation: <sqlname>, <sqlname>.sql, <sqlname>-columns.csv, <sqlname>-instructions.properties
-        val localListSqlFile = argsParsed.getOptionValue("sqlfile", "default").split("[,]")
+        val localListSqlFile = argsParsed.getOptionValue("sqlfile", "default").split(",")
         localListSqlFile.forEach {
             val localFile = get(baseConfigDir, "queries", "${it}.sql").toString()
             sqlFile.add(localFile)
@@ -106,7 +112,7 @@ class MainJDBC {
             }
         }
 
-        val listListXlsFile = (argsParsed.getOptionValue("xlsfile") ?: "output.xlsx").split("[,]")
+        val listListXlsFile = (argsParsed.getOptionValue("xlsfile") ?: "output.xlsx").split(",")
         listListXlsFile.forEach {
             xlsFile.add(it)
         }
@@ -119,15 +125,38 @@ class MainJDBC {
         sqlFile: String,
         columns: ColumnsDatabase,
     ) {
-        // Dataframe to Work :-)
-        val data = DataFrameHelper.createDataFrameFromQuery(conn, query, verbose)
 
-        // Create Excel Processor
-        val excelProcessor = ExcelProcessor(xlsFile, columns, data, verbose)
+        var queryChanged = query
+        variablesSQL.forEach {
+            queryChanged = queryChanged.replace("%{${it.nome}}", it.valor)
+        }
+
+        if (verbose)
+            println("This query executed : ${queryChanged} ")
+
+        // Dataframe to Work :-)
+        val data = DataFrameHelper.createDataFrameFromQuery(conn, queryChanged, verbose)
+
+        // Create Excel Processor (Sorted or not)
+        val excelProcessor = if (!columns.fieldsSortedAsc.isEmpty()) {
+            ExcelProcessor(
+                xlsFile, columns,
+                data.sortedBy(* columns.fieldsSortedAsc.split(",").toTypedArray()),
+                verbose
+            )
+        } else if (!columns.fieldsSortedDesc.isEmpty()) {
+            ExcelProcessor(
+                xlsFile, columns,
+                data.sortedByDescending(* columns.fieldsSortedDesc.split(",").toTypedArray()),
+                verbose
+            )
+        } else {
+            ExcelProcessor(xlsFile, columns, data, verbose)
+        }
 
         // If filename instructions exists then create Instructions Sheet in Excel file.
         val instructions = InstructionSheet(verbose)
-        val filenameInstructions = sqlFile.replace(".sql","-instructions.properties")
+        val filenameInstructions = sqlFile.replace(".sql", "-instructions.properties")
         if (instructions.loadFromFile(filenameInstructions)) {
             excelProcessor.createInstructionSheet(instructions)
         }

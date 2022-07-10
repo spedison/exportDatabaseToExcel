@@ -14,10 +14,12 @@ object ArgParse {
             .addOption("cd", "configdir", true,"Directory with config files.")
 
         options
-            .addOption("sql", "sqlfile", true, "File with Sql File query. Do not use extension \".sql\". Example --sqlfile report1,report2,report3")
+            .addOption("sql", "sqlfile", true, "File with Sql File(s) query. Do not use extension \".sql\". " +
+                    "Example --sqlfile report1,report2,report3. The number of queries have the same number of excel files."
+            )
 
         options
-            .addOption("xls", "xlsfile",true,"Output file excel format. Example --xlsfile output1.xlsx,output2.xlsx,output3.xlsx")
+            .addOption("xls", "xlsfile",true,"Output file(s) excel format. Example --xlsfile output1.xlsx,output2.xlsx,output3.xlsx")
 
         options
             .addOption("stz", "showtimezone",false,"Show all avaliable timezone in enviroment")
@@ -27,6 +29,12 @@ object ArgParse {
 
         options
             .addOption("ccf", "createcolsfile",false,"Create a configuration column file")
+
+        options
+            .addOption("sqlp", "sqlparam",true,"add param to SQL file. " +
+                    "Format -sqlp \"KEY=VALUE\". You can repeat this options many times." +
+                    "In .sql use %{KEY} for replace value. Example: in param use -sqlp \"LIMIT=10\" and " +
+                    "in query file have -> select c1, c2 from table limit %{LIMIT}")
 
         options
             .addOption("help",false,"Show help")

@@ -110,8 +110,7 @@ object DataFrameHelper {
                 value.get(ChronoField.YEAR)-1900,
                 value.get(ChronoField.MONTH_OF_YEAR)-1,
                 value.get(ChronoField.DAY_OF_MONTH))
-                //value.atStartOfDay().atZone(this.timeZoneConfig.toZoneId()).toEpochSecond() * 1000L
-            //)
+
 
         if (value is LocalTime) {
             val ret = LocalDateTime.of(LocalDate.now(), value)

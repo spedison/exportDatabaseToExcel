@@ -3,9 +3,7 @@ package com.spedison.model
 import java.io.BufferedReader
 import java.io.File
 import java.nio.charset.Charset
-import java.nio.file.Files
 import java.nio.file.Files.*
-import java.nio.file.Paths
 import java.nio.file.Paths.*
 import java.util.*
 
@@ -43,7 +41,6 @@ class InstructionSheet(private val verbose: Boolean = false) {
         }
         val buffReader: BufferedReader = newBufferedReader(get(fileName), Charset.defaultCharset())
 
-        //FileInputStream(f).use {
         prop.load(buffReader)
         this.text = prop.getProperty("Text", "Without text")
         this.sheetName = prop.getProperty("SheetName", "SheetName withou name")
@@ -56,7 +53,6 @@ class InstructionSheet(private val verbose: Boolean = false) {
             println("Instruction Sheet data was loaded.")
 
         buffReader.close()
-        //}
 
         return true
     }

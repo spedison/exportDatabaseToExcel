@@ -21,7 +21,7 @@ There are sheet information, for this use < sql >-instructions.properties file a
 ## Dependencies for build project
 
 * Kotlin - Version 1.6
-* Java   - Version 11
+* Java   - Version 18
 * Maven  - Version 3.8.1
 
 ## Dependency for run project
@@ -87,18 +87,44 @@ java -Duser.timezone=America/Sao_Paulo -jar ExtractDataToExcel.jar --sqlfile inf
 java -jar ExtractDataToExcel.jar -help
 
 usage:
- -ccf,--createcolsfile   Create a configuration column file
- -cd,--configdir <arg>   Directory with config files.
- -help                   Show help
- -sc,--showcols          Show Columns of SQL File
- -sql,--sqlfile <arg>    File with Sql File query. Do not use extension
-                         ".sql". Example --sqlfile report1
- -stz,--showtimezone     Show all avaliable timezone in enviroment
- -v,--verbose            Turn verbose mode on. Show details while
-                         processing
- -xls,--xlsfile <arg>    Output file excel format. Example --xlsfile
-                         output.xlsx
+ -ccf,--createcolsfile    Create a configuration column file
+ -cd,--configdir <arg>    Directory with config files.
+ -help                    Show help
+ -sc,--showcols           Show Columns of SQL File
+ -sql,--sqlfile <arg>     File with Sql File(s) query. Do not use
+                          extension ".sql". Example --sqlfile
+                          report1,report2,report3. The number of queries
+                          have the same number of excel files.
+ -sqlp,--sqlparam <arg>   add param to SQL file. Format -sqlp "KEY=VALUE".
+                          You can repeat this options many times.In .sql
+                          use %{KEY} for replace value. Example: in param
+                          use -sqlp "LIMIT=10" and in query file have ->
+                          select c1, c2 from table limit %{LIMIT}
+ -stz,--showtimezone      Show all avaliable timezone in enviroment
+ -v,--verbose             Turn verbose mode on. Show details while
+                          processing
+ -xls,--xlsfile <arg>     Output file(s) excel format. Example --xlsfile
+                          output1.xlsx,output2.xlsx,output3.xlsx
+                       
 ```                           
+
+### Using Sorted Fields
+    In *-columns.csv add last lines fields database then you need sorted.
+    Use this format but the "+" char is optional:
+```
+    --SORTED+:<first database field>
+    --SORTED+:<second database field>
+    --SORTED+:...
+```
+    or with minus for reverse order.
+```
+    --SORTED-:<first database field>
+    --SORTED-:<second database field>
+    --SORTED-:...
+```
+    Only one this (+ or -) has used. 
+
+    Use this option when is very slow ORDER BY CLAUSE in SQL Query. 
 
 ### Others Details
 
@@ -122,3 +148,12 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
     https://1drv.ms/u/s!Asl9Qoe_F0_Vp6sfLWZ5watAr1Zo7Q
 
 ### 6) Last changes
+
+#### 09/07/2022    (Version 1.1.0)
+   * Use java 18
+   * Execute many queries in the same process.
+   * Accept Parameters to query in command line.
+   * Order Asc/Desc in Any collumn after execute query.
+
+### 7) TODO List
+   * Parameter file Multiline.
