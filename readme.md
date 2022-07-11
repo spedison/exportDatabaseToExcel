@@ -9,13 +9,13 @@ This Excel file have Collumn site ajusted and Header with Bold font.
 There are sheet information, for this use < sql >-instructions.properties file and create with custon text.
 
     Input :  
-        * Query
+        * Queries
         * Connection Database
         * Custon Text
         * Fields information
 
     Output :
-        * Formated Excel File
+        * Formated Excel Files
         * Custom sheet data.
 
 ## Dependencies for build project
@@ -26,7 +26,7 @@ There are sheet information, for this use < sql >-instructions.properties file a
 
 ## Dependency for run project
 
-* Java   - Version 11
+* Java   - Version 18
 
 ## Process Build
 
@@ -145,17 +145,17 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * pass=***Use Keyboard***
 
 ### 5) Download packages ready to use:
-    https://1drv.ms/u/s!Asl9Qoe_F0_Vp6sfLWZ5watAr1Zo7Q
+    https://1drv.ms/f/s!Asl9Qoe_F0_Vp6se7kHBum5fsfyxeg
 
 ### 6) Last changes
 
 #### 09/07/2022    (Version 1.1.0)
-   * Use java 18
-   * Execute many queries in the same process.
-   * Accept Parameters to query in command line.
-   * Order Asc/Desc in Any collumn after execute query.
+        * Use java 18
+        * Execute many queries in the same process.
+        * Accept Parameters to query in command line.
+        * Order Asc/Desc in Any collumn after execute query.
 
 ### 7) TODO List
-   * Parameter file Multiline.
-   * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
-   * Add output types (zip, csv, ...)
+        * Parameter file Multiline.
+        * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
+        * Add output types (zip, csv, ...)
