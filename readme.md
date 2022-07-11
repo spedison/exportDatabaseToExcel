@@ -159,3 +159,4 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * Parameter file Multiline.
         * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
         * Add output types (zip, csv, ...)
+        * Add options in Coluns Files for Add Line Title. (Use title, Number os Coluns, Size of font, Color font and Color Background.
