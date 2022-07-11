@@ -158,3 +158,4 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
 ### 7) TODO List
    * Parameter file Multiline.
    * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
+   * Add output types (zip, csv, ...)
