@@ -156,6 +156,7 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * Order Asc/Desc in Any collumn after execute query.
 
 ### 7) TODO List
+        * Add create password (excel or zip) on the fly and log it on terminal.
         * Parameter file Multiline.
         * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
         * Add output types (zip, csv, ...)
