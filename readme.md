@@ -161,3 +161,4 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
         * Add output types (zip, csv, ...)
         * Add options in Coluns Files for Add Line Title. (Use title, Number os Coluns, Size of font, Color font and Color Background.
+	* Sorting remove special chars and replace á by a ... Ignoring Case
