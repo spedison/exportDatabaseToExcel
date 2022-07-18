@@ -20,17 +20,19 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
             .filter { line -> !line.trim().startsWith("--") }
             .filter { line -> !line.trim().isEmpty() }
             .map { s -> s.split(",") }.map { sArray ->
+                val addToExcel: Boolean = if (sArray.size == 5) true else sArray[5].trim().toBoolean();
                 ColumnDatabase(
                     sArray[0],
                     sArray[1],
                     TypeColumn.convertFromString(sArray[2]),
                     sArray[4].toInt(),
-                    sArray[3].toInt()
+                    sArray[3].toInt(),
+                    addToExcel
                 )
             }.forEach(this::add)
 
         lines
-            .filter { it.trim().startsWith("--SORTED+:") or  it.trim().startsWith("--SORTED:")}
+            .filter { it.trim().startsWith("--SORTED+:") or it.trim().startsWith("--SORTED:") }
             .map { it.replace("--SORTED+:", "") }
             .map { it.replace("--SORTED:", "") }
             .map(String::trim)
@@ -49,6 +51,11 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
             fieldsSortedDesc = fieldsSortedDesc.subSequence(0, fieldsSortedDesc.length - 1).toString()
 
     }
+
+    fun hasManipulateStrings(): Boolean =
+        this
+            .filter(ColumnDatabase::hasChangeString)
+            .isNotEmpty();
 
     fun readFileConfiguration(file: File) {
         readConfiguration(file.readLines())
@@ -103,11 +110,11 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
                     name,
                     typeColumn,
                     rsmd.getColumnDisplaySize(i),
-                    min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250)
+                    min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250),
+                    true
                 )
             )
         }
-
         rs.close()
     }
 

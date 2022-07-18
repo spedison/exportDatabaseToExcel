@@ -107,6 +107,11 @@ class ExcelProcessor(private val fileNameExcelOutput: String, private val column
                 // Define Excel CellType
                 val cellType: CellType = when (col.type) {
                     TypeColumn.STRING -> CellType.STRING
+                    TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION -> CellType.STRING
+                    TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION -> CellType.STRING
+                    TypeColumn.STRING_LOWER -> CellType.STRING
+                    TypeColumn.STRING_UPPER -> CellType.STRING
+                    //TODO: Add All fields.
                     TypeColumn.INT -> CellType.NUMERIC
                     TypeColumn.LONG -> CellType.NUMERIC
                     TypeColumn.DOUBLE -> CellType.NUMERIC

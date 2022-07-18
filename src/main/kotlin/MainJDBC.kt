@@ -135,7 +135,12 @@ class MainJDBC {
             println("This query executed : ${queryChanged} ")
 
         // Dataframe to Work :-)
-        val data = DataFrameHelper.createDataFrameFromQuery(conn, queryChanged, verbose)
+        var data = DataFrameHelper.createDataFrameFromQuery(conn, queryChanged, verbose)
+
+
+        // Apply Upper or LowerCase in fields
+        if (columns.hasManipulateStrings())
+            data = DataFrameHelper.manipuleStringsTypes(data, columns)
 
         // Create Excel Processor (Sorted or not)
         val excelProcessor = if (!columns.fieldsSortedAsc.isEmpty()) {
