@@ -8,7 +8,7 @@ sealed class TypeColumn (val typeString: String) {
     object STRING_UPPER_WITHOUT_ACCENTUATION : TypeColumn("str_upper_without_accentuation")
     object STRING_LOWER_WITHOUT_ACCENTUATION_ONLY_LETTERS : TypeColumn("str_lower_without_accentuation_only_letters")
     object STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS : TypeColumn("str_upper_without_accentuation_only_letters")
-    object STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION : TypeColumn("str_without_accentuation_only_letters")
+    object STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION : TypeColumn("str_only_letters_without_accentuation")
     object STRING_ONLY_LETTERS : TypeColumn("str_only_letters")
     object STRING : TypeColumn("str")
     object INT : TypeColumn("int")

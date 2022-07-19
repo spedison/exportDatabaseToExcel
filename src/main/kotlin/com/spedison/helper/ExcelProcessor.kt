@@ -10,15 +10,20 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import kotlin.math.min
 
-class ExcelProcessor(private val fileNameExcelOutput: String, private val columnsDatabase: ColumnsDatabase, private val data: DataFrame, private val verbose: Boolean = false) {
+class ExcelProcessor(
+    private val fileNameExcelOutput: String,
+    private val columnsDatabase: ColumnsDatabase,
+    private val data: DataFrame,
+    private val verbose: Boolean = false,
+) {
 
     private val wb: Workbook = XSSFWorkbook()
     private val outputStremXlsx: OutputStream
     private var sheetsCount: Int = 0
 
-    private val cellDayFormat : CellStyle = wb.createCellStyle()
-    private val cellHourFormat : CellStyle = wb.createCellStyle()
-    private val cellDateTimeFormat : CellStyle = wb.createCellStyle()
+    private val cellDayFormat: CellStyle = wb.createCellStyle()
+    private val cellHourFormat: CellStyle = wb.createCellStyle()
+    private val cellDateTimeFormat: CellStyle = wb.createCellStyle()
 
     init {
         this.outputStremXlsx = FileOutputStream(this.fileNameExcelOutput)
@@ -68,8 +73,8 @@ class ExcelProcessor(private val fileNameExcelOutput: String, private val column
         style.setFont(font)
         var col = 0
 
-        for (column in columnsDatabase) {
-            page.setColumnWidth(col,  min( column.lengthExcel, 250*250) )
+        for (column in columnsDatabase.filter { it.addToExcel }) {
+            page.setColumnWidth(col, min(column.lengthExcel, 250 * 250))
             val cell = line.createCell(col)
             cell.setCellValue(column.nameExcel)
             cell.cellStyle = style
@@ -101,17 +106,20 @@ class ExcelProcessor(private val fileNameExcelOutput: String, private val column
             if (verbose)
                 println("Line Dataframe ${line} = " + data.row(lineData))
 
-            // Iterate in Coluns of Dataframe
-            for (col in columnsDatabase) {
+            // Iterate in Coluns of Dataframe (Only fields to Excel)
+            for (col in columnsDatabase.filter { it.addToExcel }) {
 
                 // Define Excel CellType
                 val cellType: CellType = when (col.type) {
-                    TypeColumn.STRING -> CellType.STRING
                     TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION -> CellType.STRING
                     TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION -> CellType.STRING
+                    TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> CellType.STRING
+                    TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> CellType.STRING
+                    TypeColumn.STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION -> CellType.STRING
+                    TypeColumn.STRING_ONLY_LETTERS -> CellType.STRING
+                    TypeColumn.STRING -> CellType.STRING
                     TypeColumn.STRING_LOWER -> CellType.STRING
                     TypeColumn.STRING_UPPER -> CellType.STRING
-                    //TODO: Add All fields.
                     TypeColumn.INT -> CellType.NUMERIC
                     TypeColumn.LONG -> CellType.NUMERIC
                     TypeColumn.DOUBLE -> CellType.NUMERIC
@@ -124,12 +132,31 @@ class ExcelProcessor(private val fileNameExcelOutput: String, private val column
                 // Create one Cel
                 val cel = row.createCell(colNum, cellType)
 
-
                 if (DataFrameHelper.isNull(lineData, col, data)) {
                     cel.setBlank()
                 } else {
                     when (col.type) {
                         TypeColumn.STRING -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
+                        TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_ONLY_LETTERS -> cel.setCellValue(
+                            DataFrameHelper.readString(lineData, col, data)
+                        )
+                        TypeColumn.STRING_LOWER -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
+                        TypeColumn.STRING_UPPER -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
                         TypeColumn.INT -> cel.setCellValue(DataFrameHelper.readInt(lineData, col, data).toDouble())
                         TypeColumn.LONG -> cel.setCellValue(DataFrameHelper.readLong(lineData, col, data).toDouble())
                         TypeColumn.DOUBLE -> cel.setCellValue(DataFrameHelper.readDouble(lineData, col, data))
