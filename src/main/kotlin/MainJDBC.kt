@@ -32,6 +32,11 @@ class MainJDBC {
             return
         }
 
+        if (argsParsed.hasOption("showfieldtypes")) {
+            ArgParse.printHelpFieldTypes()
+            return
+        }
+
         if (argsParsed.hasOption("showtimezone")) {
             ListTimeZone.print()
             return
@@ -58,20 +63,27 @@ class MainJDBC {
         // Open conection database
         val conn: Connection = conectionDatabase.getConection()
 
+        // Put All variables in queries.
+        for (i in 0 until query.size) {
+            variablesSQL.forEach {
+                query.set(i, query.get(i).replace("%{${it.nome}}", it.valor))
+            }
+        }
+
         // Show Columns or create configuration File.
         if (showColsInfo) {
-            for (i in 0..sqlFile.size - 1) {
+            for (i in 0 until sqlFile.size) {
                 if (argsParsed.hasOption("createcolsfile")) {
                     columns.get(i).getColumns(query.get(i), conn)
-                    columns.get(i).writeConfiguration(File("${sqlFile.get(i)}-columns.csv"))
-                    println("Configuartion file \"${sqlFile.get(i)}-columns.csv\" has created.")
+                    columns.get(i).writeConfiguration(File("${sqlFile.get(i).replace(".sql","")}-columns.csv"))
+                    println("Configuration file \"${sqlFile.get(i).replace(".sql","")}-columns.csv\" has created.")
                 } else {
                     // Show Columns of query
                     ShowCols.print(query.get(i), conn, false)
                 }
             }
         } else {
-            for (i in 0..sqlFile.size - 1) {
+            for (i in 0 until sqlFile.size) {
                 createExcelFile(conn, query.get(i), xlsFile.get(i), sqlFile.get(i), columns.get(i))
             }
         }
@@ -105,11 +117,13 @@ class MainJDBC {
             query.add(SqlLoadHelper.loadSqlFromFile(localFile, verbose))
 
             // Load coluns configurations, if will not be show fields data
-            if (showColsInfo == false) {
-                val columnsToadd = ColumnsDatabase()
+
+            val columnsToadd = ColumnsDatabase()
+            if (showColsInfo == false) { // If ShowInfo Coluns, dont read config file.
                 columnsToadd.readFileConfiguration(File(localFile.replace(".sql", "-columns.csv")))
-                columns.add(columnsToadd)
             }
+            columns.add(columnsToadd)
+
         }
 
         val listListXlsFile = (argsParsed.getOptionValue("xlsfile") ?: "output.xlsx").split(",")
@@ -127,9 +141,6 @@ class MainJDBC {
     ) {
 
         var queryChanged = query
-        variablesSQL.forEach {
-            queryChanged = queryChanged.replace("%{${it.nome}}", it.valor)
-        }
 
         if (verbose)
             println("This query executed : ${queryChanged} ")

@@ -8,7 +8,7 @@ data class ColumnDatabase(
     val type: TypeColumn,
     val lengthColumnDatabase: Int,
     val lengthExcel: Int,
-    val addToExcel: Boolean, //TODO: Use this field to Write Excel file.
+    val addToExcel: Boolean = true
 ) {
 
     override fun toString(): String {
@@ -23,7 +23,6 @@ data class ColumnDatabase(
                 this.type.equals(TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION_ONLY_LETTERS) or
                 this.type.equals(TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS) or
                 this.type.equals(TypeColumn.STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION) or
-                this.type.equals(TypeColumn.STRING_ONLY_LETTERS)
-
-
+                this.type.equals(TypeColumn.STRING_ONLY_LETTERS) or
+                this.type.equals(TypeColumn.STRING_WITHOUT_ACCENTUATION)
 }

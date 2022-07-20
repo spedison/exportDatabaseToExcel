@@ -3,10 +3,7 @@ package com.spedison.helper
 import com.spedison.model.ColumnDatabase
 import com.spedison.model.ColumnsDatabase
 import com.spedison.model.enuns.TypeColumn
-import krangl.DataFrame
-import krangl.DataFrameRow
-import krangl.fromResultSet
-import krangl.rename
+import krangl.*
 import java.sql.Connection
 import java.sql.Date
 import java.time.LocalDate
@@ -56,7 +53,10 @@ object DataFrameHelper {
         if (ret is Int)
             return ret.toLong()
 
-        throw RuntimeException("Type Mismath")
+        if (ret is Double)
+            return ret.toDouble().toLong()
+
+        throw RuntimeException("Type Mismath in line ${line}, ${columnsDatabase.nameDatabase}")
     }
 
     fun readDouble(line: Int, columnsDatabase: ColumnDatabase, data: DataFrame): Double {
@@ -188,13 +188,16 @@ object DataFrameHelper {
     fun lowerAndRemoveAccentuation(value: String): String =
         replaceAccentuation(value.lowercase())
 
-    private val onlyCharRegExp = Regex("[^A-Za-z 0-9áÁéÉíÍóÓúÚàÀèÈìÌòÒùÙâÂêÊîÎôÔûÛãÃẽÊĩĨõÕũŨçÇ]")
+    private val onlyCharRegExp = Regex("[^A-Za-z áÁéÉíÍóÓúÚàÀèÈìÌòÒùÙâÂêÊîÎôÔûÛãÃẽÊĩĨõÕũŨçÇ]")
 
     fun removeAccentuationAndRemoveNoLetters(value: String): String {
         return onlyCharRegExp.replace(
             replaceAccentuation(value), ""
         )
     }
+
+    fun removeAccentuation(value: String): String = replaceAccentuation(value)
+
 
     fun manipuleStringsTypes(dataframe: DataFrame, columns: ColumnsDatabase): DataFrame {
 
@@ -204,13 +207,14 @@ object DataFrameHelper {
             f.hasChangeString()
         }
 
+
         collunsManipulate.forEach { c ->
             when (c.type) {
                 // Convert String in UPPERCASE
                 TypeColumn.STRING_UPPER -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        (it[c.nameDatabase + "__TO_MANIPULATE"] + "  11")
+                        it[c.nameDatabase + "__TO_MANIPULATE"].map<String>(String::uppercase)
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -219,16 +223,16 @@ object DataFrameHelper {
                 TypeColumn.STRING_LOWER -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        (it.get(c.nameDatabase + "__TO_MANIPULATE") as String).lowercase()
+                        it[c.nameDatabase + "__TO_MANIPULATE"].map<String>(String::lowercase)
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
 
-                // Convert String with without accentuation "é" -> "e", "Ê" -> "E" ...
+                // Convert String with without accentuation "é" -> "E", "Ê" -> "E" ...
                 TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        upperAndRemoveAccentuation((it.get(c.nameDatabase + "__TO_MANIPULATE") as String))
+                        it.get(c.nameDatabase + "__TO_MANIPULATE").map<String> { upperAndRemoveAccentuation(it) }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -237,7 +241,7 @@ object DataFrameHelper {
                 TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        lowerAndRemoveAccentuation((it.get(c.nameDatabase + "__TO_MANIPULATE") as String))
+                        it.get(c.nameDatabase + "__TO_MANIPULATE").map<String> { lowerAndRemoveAccentuation(it) }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -246,7 +250,8 @@ object DataFrameHelper {
                 TypeColumn.STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        removeAccentuationAndRemoveNoLetters((it.get(c.nameDatabase + "__TO_MANIPULATE") as String))
+                        it.get(c.nameDatabase + "__TO_MANIPULATE")
+                            .map<String> { removeAccentuationAndRemoveNoLetters(it) }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -255,10 +260,8 @@ object DataFrameHelper {
                 TypeColumn.STRING_LOWER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        onlyCharRegExp.replace(
-                            lowerAndRemoveAccentuation(it.get(c.nameDatabase + "__TO_MANIPULATE") as String),
-                            ""
-                        )
+                        it.get(c.nameDatabase + "__TO_MANIPULATE")
+                            .map<String> { onlyCharRegExp.replace(lowerAndRemoveAccentuation(it), "") }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -266,10 +269,8 @@ object DataFrameHelper {
                 TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        onlyCharRegExp.replace(
-                            upperAndRemoveAccentuation(it.get(c.nameDatabase + "__TO_MANIPULATE") as String),
-                            ""
-                        )
+                        it.get(c.nameDatabase + "__TO_MANIPULATE")
+                            .map<String> { onlyCharRegExp.replace(upperAndRemoveAccentuation(it), "") }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }
@@ -278,7 +279,17 @@ object DataFrameHelper {
                 TypeColumn.STRING_ONLY_LETTERS -> {
                     retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
                     retDataframe = retDataframe.addColumn(c.nameDatabase) {
-                        onlyCharRegExp.replace((it.get(c.nameDatabase + "__TO_MANIPULATE") as String), "")
+                        it.get(c.nameDatabase + "__TO_MANIPULATE")
+                            .map<String> { onlyCharRegExp.replace(it, "") }
+                    }
+                    retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
+                }
+
+                TypeColumn.STRING_WITHOUT_ACCENTUATION -> {
+                    retDataframe = retDataframe.rename(c.nameDatabase to c.nameDatabase + "__TO_MANIPULATE")
+                    retDataframe = retDataframe.addColumn(c.nameDatabase) {
+                        it.get(c.nameDatabase + "__TO_MANIPULATE")
+                            .map<String> { removeAccentuation(it) }
                     }
                     retDataframe = retDataframe.remove(c.nameDatabase + "__TO_MANIPULATE")
                 }

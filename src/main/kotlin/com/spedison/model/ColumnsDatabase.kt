@@ -1,5 +1,6 @@
 package com.spedison.model
 
+import com.spedison.database.VariableSQL
 import com.spedison.model.enuns.TypeColumn
 import java.io.File
 import java.io.FileOutputStream
@@ -20,15 +21,23 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
             .filter { line -> !line.trim().startsWith("--") }
             .filter { line -> !line.trim().isEmpty() }
             .map { s -> s.split(",") }.map { sArray ->
-                val addToExcel: Boolean = if (sArray.size == 5) true else sArray[5].trim().toBoolean();
-                ColumnDatabase(
-                    sArray[0],
-                    sArray[1],
-                    TypeColumn.convertFromString(sArray[2]),
-                    sArray[4].toInt(),
-                    sArray[3].toInt(),
-                    addToExcel
-                )
+                if (sArray.size == 5)
+                    ColumnDatabase(
+                        sArray[0],
+                        sArray[1],
+                        TypeColumn.convertFromString(sArray[2]),
+                        sArray[4].toInt(),
+                        sArray[3].toInt()
+                    )
+                else
+                    ColumnDatabase(
+                        sArray[0],
+                        sArray[1],
+                        TypeColumn.convertFromString(sArray[2]),
+                        sArray[4].toInt(),
+                        sArray[3].toInt(),
+                        sArray[5].lowercase().toBoolean()
+                    )
             }.forEach(this::add)
 
         lines
@@ -63,7 +72,7 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
 
     fun writeConfiguration(file: File) {
         val out: OutputStream = FileOutputStream(file)
-        out.write("##ExcelName,DBName,Type,LengthExcel,LengthDB\n".toByteArray(Charset.defaultCharset()))
+        out.write("##ExcelName,DBName,Type,LengthExcel,LengthDB,AddInExcelFile(true,false-default is true)\n".toByteArray(Charset.defaultCharset()))
         this.map(ColumnDatabase::toString).map { it -> it + "\n" }
             .forEach { it -> out.write(it.toByteArray(Charset.defaultCharset())) }
         out.close()
@@ -100,7 +109,8 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
                 Types.VARCHAR -> "str"
                 Types.VARBINARY -> "Var Binary-NS"
                 Types.LONGNVARCHAR -> "str"
-                else -> "Unknown Type-NS"
+                Types.NUMERIC -> "long"
+                else -> "Unknown Type-NS ${rsmd.getColumnType(i)}"
             }
 
             val typeColumn: TypeColumn = TypeColumn.convertFromString(nameOfType)
@@ -110,11 +120,11 @@ class ColumnsDatabase : LinkedList<ColumnDatabase>() {
                     name,
                     typeColumn,
                     rsmd.getColumnDisplaySize(i),
-                    min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250),
-                    true
+                    min(rsmd.getColumnDisplaySize(i) * 50, 250 * 250)
                 )
             )
         }
+
         rs.close()
     }
 

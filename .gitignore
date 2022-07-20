@@ -1,5 +1,6 @@
 /.idea/
 /conf-mysql/
+/conf-oracle/
 /conf-postgresql/
 /target/
 consoleApp.iml

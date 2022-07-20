@@ -6,6 +6,7 @@ import com.spedison.model.enuns.TypeColumn
 import krangl.DataFrame
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.bouncycastle.asn1.x509.qualified.TypeOfBiometricData
 import java.io.FileOutputStream
 import java.io.OutputStream
 import kotlin.math.min
@@ -21,9 +22,9 @@ class ExcelProcessor(
     private val outputStremXlsx: OutputStream
     private var sheetsCount: Int = 0
 
-    private val cellDayFormat: CellStyle = wb.createCellStyle()
-    private val cellHourFormat: CellStyle = wb.createCellStyle()
-    private val cellDateTimeFormat: CellStyle = wb.createCellStyle()
+    private val cellDayFormat : CellStyle = wb.createCellStyle()
+    private val cellHourFormat : CellStyle = wb.createCellStyle()
+    private val cellDateTimeFormat : CellStyle = wb.createCellStyle()
 
     init {
         this.outputStremXlsx = FileOutputStream(this.fileNameExcelOutput)
@@ -91,6 +92,8 @@ class ExcelProcessor(
         // Create Header and Ajust Width Size
         createHeaderAndWidth(page)
 
+        val columnsDatabase_used = columnsDatabase.filter { it.addToExcel }
+
         // Iterate in lines of dataframe
         for (line: Int in (1..data.nrow)) {
 
@@ -106,8 +109,8 @@ class ExcelProcessor(
             if (verbose)
                 println("Line Dataframe ${line} = " + data.row(lineData))
 
-            // Iterate in Coluns of Dataframe (Only fields to Excel)
-            for (col in columnsDatabase.filter { it.addToExcel }) {
+            // Iterate in Coluns of Dataframe
+            for (col in columnsDatabase_used) {
 
                 // Define Excel CellType
                 val cellType: CellType = when (col.type) {
@@ -117,6 +120,7 @@ class ExcelProcessor(
                     TypeColumn.STRING_UPPER_WITHOUT_ACCENTUATION_ONLY_LETTERS -> CellType.STRING
                     TypeColumn.STRING_ONLY_LETTERS_WITHOUT_ACCENTUATION -> CellType.STRING
                     TypeColumn.STRING_ONLY_LETTERS -> CellType.STRING
+                    TypeColumn.STRING_WITHOUT_ACCENTUATION -> CellType.STRING
                     TypeColumn.STRING -> CellType.STRING
                     TypeColumn.STRING_LOWER -> CellType.STRING
                     TypeColumn.STRING_UPPER -> CellType.STRING
@@ -131,6 +135,7 @@ class ExcelProcessor(
 
                 // Create one Cel
                 val cel = row.createCell(colNum, cellType)
+
 
                 if (DataFrameHelper.isNull(lineData, col, data)) {
                     cel.setBlank()
@@ -157,6 +162,8 @@ class ExcelProcessor(
                         )
                         TypeColumn.STRING_LOWER -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
                         TypeColumn.STRING_UPPER -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
+                        TypeColumn.STRING_WITHOUT_ACCENTUATION -> cel.setCellValue(DataFrameHelper.readString(lineData, col, data))
+
                         TypeColumn.INT -> cel.setCellValue(DataFrameHelper.readInt(lineData, col, data).toDouble())
                         TypeColumn.LONG -> cel.setCellValue(DataFrameHelper.readLong(lineData, col, data).toDouble())
                         TypeColumn.DOUBLE -> cel.setCellValue(DataFrameHelper.readDouble(lineData, col, data))
