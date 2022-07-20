@@ -2,10 +2,14 @@ package com.spedison.database
 
 
 /**
- * Formato da linha de comando -p "CHAVE=VALOR"
+ * Command Line Format is -sqlp "KEY=VALUE"
+ *
  */
 data class VariableSQL(val nome: String, val valor: String) {
+
     companion object {
+
+        // From String method receive is "KEY=VALUE" Static Methos
         fun fromString(str: String): VariableSQL {
             val strs = str.split("=")
             if (strs.size != 2) {
@@ -14,5 +18,6 @@ data class VariableSQL(val nome: String, val valor: String) {
             }
             return VariableSQL(strs.get(0),strs.get(1))
         }
+
     }
 }

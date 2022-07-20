@@ -1,5 +1,6 @@
 package com.spedison.helper
 
+import com.spedison.model.enuns.TypeColumn
 import org.apache.commons.cli.*
 
 
@@ -31,6 +32,9 @@ object ArgParse {
             .addOption("ccf", "createcolsfile",false,"Create a configuration column file")
 
         options
+            .addOption("sft","showfieldtypes", false, "Show all field types and your use")
+
+        options
             .addOption("sqlp", "sqlparam",true,"add param to SQL file. " +
                     "Format -sqlp \"KEY=VALUE\". You can repeat this options many times." +
                     "In .sql use %{KEY} for replace value. Example: in param use -sqlp \"LIMIT=10\" and " +
@@ -59,5 +63,10 @@ object ArgParse {
             printHelp()
             throw e
         }
+    }
+
+    fun printHelpFieldTypes() {
+        println("Show all field types :")
+        println( TypeColumn.showHelpFields())
     }
 }
