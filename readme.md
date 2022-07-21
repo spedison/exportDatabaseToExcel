@@ -91,6 +91,7 @@ usage:
  -cd,--configdir <arg>    Directory with config files.
  -help                    Show help
  -sc,--showcols           Show Columns of SQL File
+ -sft,--showfieldtypes    Show all field types and your use
  -sql,--sqlfile <arg>     File with Sql File(s) query. Do not use
                           extension ".sql". Example --sqlfile
                           report1,report2,report3. The number of queries
@@ -107,6 +108,40 @@ usage:
                           output1.xlsx,output2.xlsx,output3.xlsx
                        
 ```                           
+
+### There are show variatios on Used fields for this use: java -jar ExtractDataToExcel.jar -sft
+
+```
+Show all field types :
+Field: str_upper                                - String field, after read data convert data to Uppercase.
+Field: str_lower                                - String field, after read data convert data to Lowercase.
+Field: str_lower_without_accentuation           - String field, after read data convert data to lowercase, remove accentuation (é->e, à->a...).
+Field: str_upper_without_accentuation           - String field, after read data convert data to uppercase, remove accentuation (É->e, Á->a...).
+Field: str_lower_without_accentuation_only_letters - String field, after read data convert data to lowercase, remove accentuation and remove no letters (-01ÉeÁx->eeax).
+Field: str_upper_without_accentuation_only_letters - String field, after read data convert data to uppercase, remove accentuation and remove no letters (-01ÉeÁx->EEAX).
+Field: str_only_letters_without_accentuation    - String field, after read data convert remove accentuation and remove no letters("-01Ée.Áx"->EeAx).
+Field: str_only_letters                         - String field, after read data convert remove no letters("-01Ée.Áx"->ÉaÁx).
+Field: str_without_accentuation                 - String field, after read data remove accentuation("-01Ée.Áx"->"-01Ea.Ax").
+Field: str                                      - Field String with no transformations
+Field: int                                      - Integer field
+Field: long                                     - Long number field
+Field: float                                    - Float decimal field
+Field: double                                   - Double decimal field
+Field: day                                      - Day information field. dd/mm/yyyy
+Field: time                                     - Time information field. HH:MM:SS
+Field: datetime                                 - Timestamp field Data and Time field. 
+```
+
+### Format in Colluns file : 
+	-- NameExcel,NameDB,Type,SizeExcel,SizeDB[,AddToExcel]
+	* NameExcel is name used in Collun Excel file.
+	* NameDB is field name in database
+	* Type is type of field in list -sft help
+	* AddToExcel is false or true. If true add collumn in Excel File, false dont write this field in Excel file.
+
+### Why field is not added in Excel file?
+ - You can use this field to Sort data
+ - This field is not used.
 
 ### Using Sorted Fields
     In *-columns.csv add last lines fields database then you need sorted.
@@ -154,11 +189,15 @@ When < sql >-instructions.properties file is ausent, the sheet instruction will 
         * Execute many queries in the same process.
         * Accept Parameters to query in command line.
         * Order Asc/Desc in Any collumn after execute query.
-
+	
+#### 21/07/2022    (Version 1.1.1)
+        * Added field types with string process. 
+	* Declared fields can be dont writed in Excel file.
+	
 ### 7) TODO List
         * Add create password (excel or zip) on the fly and log it on terminal.
         * Parameter file Multiline.
         * Add rules for apply colors in rows at Excel file. (Font and Backcolor)
         * Add output types (zip, csv, ...)
         * Add options in Coluns Files for Add Line Title. (Use title, Number os Coluns, Size of font, Color font and Color Background.
-	* Sorting remove special chars and replace á by a ... Ignoring Case
+	* Sorting remove special chars and replace á by a ... Ignoring Case. [Done]
